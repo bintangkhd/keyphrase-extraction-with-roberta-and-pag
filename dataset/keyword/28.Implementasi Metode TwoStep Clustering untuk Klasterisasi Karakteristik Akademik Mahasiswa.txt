@@ -1,0 +1,1 @@
+Data Akademik; TwoStep; K-Means; Klusterisasi; Bayesian Information Criterion; Ratio Distance Measure

@@ -1,0 +1,1 @@
+Akurasi; Citra; Klasifikasi; Satelit SPOT-6; Lahan; CNN
