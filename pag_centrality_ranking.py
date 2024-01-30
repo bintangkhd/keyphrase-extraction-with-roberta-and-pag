@@ -13,19 +13,42 @@ class PagCentralityRanking:
         self.traditional_selected_keyphrase = []
         
     def get_target_position_bias(self, target_word):
-        document_words = re.split(r"\W+", self.document.lower())
-        target_words = re.split(r"\W+", target_word.lower())
-        target_word_position = document_words.index(target_words[0])
+        separator_pattern = re.compile(r"\W+")  # Pattern untuk memisahkan kata non-huruf
+        document_words = separator_pattern.split(
+            self.data.lower()
+        )  # Pisahkan kata dalam dokumen dan ubah menjadi huruf kecil
+        input_words = separator_pattern.split(
+            target_word.lower()
+        )  # Pisahkan kata dalam input dan ubah menjadi huruf kecil
 
-        return torch.tensor([target_word_position + 1])
+        word_position = 0
+
+        # Cari posisi teks input dalam dokumen
+        for i in range(len(document_words) - len(input_words) + 1):
+            if document_words[i: i + len(input_words)] == input_words:
+                word_position = i
+                break
+
+        return torch.tensor([word_position + 1])
     
     def get_next_target_position_bias(self, target_word):
-        document_words = re.split(r"\W+", self.document.lower())
-        target_words = re.split(r"\W+", target_word.lower())
-        target_word_index = document_words.index(target_words[0])
-        next_target_word_position = target_word_index + 1 if target_word_index + 1 < len(document_words) else -1
+        separator_pattern = re.compile(r"\W+")  # Pattern untuk memisahkan kata non-huruf
+        document_words = separator_pattern.split(
+            self.data.lower()
+        )  # Pisahkan kata dalam dokumen dan ubah menjadi huruf kecil
+        input_words = separator_pattern.split(
+            target_word.lower()
+        )  # Pisahkan kata dalam input dan ubah menjadi huruf kecil
 
-        return torch.tensor([next_target_word_position + 1])
+        word_position = 0
+
+        # Cari posisi teks input dalam dokumen
+        for i in range(len(document_words) - len(input_words) + 1):
+            if document_words[i: i + len(input_words)] == input_words:
+                word_position += i
+                break
+
+        return torch.tensor([word_position + 1])
     
     def calculate_exponential_value(self, i):
         expv2_sum = torch.tensor([1.0])
@@ -39,7 +62,7 @@ class PagCentralityRanking:
         return expv1 / expv2_sum
     
     def traditional_centrality_scoring(self, vertice_i):
-        traditional_centrality_score = torch.tensor([0])
+        traditional_centrality_score = torch.tensor([0.0])
 
         for j in range(len(self.vertice)):
             edge_ij = vertice_i * self.vertice[j]
@@ -61,8 +84,6 @@ class PagCentralityRanking:
 
         self.traditional_keyphrase_index = top_traditional.tolist()
         self.pag_keyphrase_index = top_indices.tolist()
-
-        return self.pag_keyphrase_index
     
     def get_pag_keyphrase_by_index(self):
         keyphrases = []
@@ -73,7 +94,6 @@ class PagCentralityRanking:
             else:
                 keyphrases.append(None)
                 self.pag_selected_keyphrase.append(None)
-        return keyphrases
     
     def get_traditional_keyphrase_by_index(self):
         keyphrases = []
@@ -85,7 +105,3 @@ class PagCentralityRanking:
             else:
                 keyphrases.append(None)
                 self.traditional_selected_keyphrase.append(None)
-        return keyphrases
-        
-        
-        
