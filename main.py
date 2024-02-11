@@ -3,6 +3,7 @@ from preprocessing import Preprocessing
 from roberta_embedding import RobertaEmbedding
 from pag_centrality_ranking import PagCentralityRanking
 
+st.header('SKRIPSINYA BINTANG NIH BOSSS')
 class Main:
     def __init__(self):
         self.input_title = " "
@@ -17,6 +18,7 @@ class Main:
         self.input_title = st.text_area("Masukkan Judul Dokumen:")
         self.input_abstract = st.text_area("Masukkan Abstrak Dokumen:")
         self.golden_keyphrase = st.text_area("Masukkan Golden keyphrase :")
+        self.golden_keyphrase = self.golden_keyphrase.lower()
         self.golden_keyphrase = self.golden_keyphrase.split(";")
 
     def confusion_matrix_evaluation(self, candidate_keyphrase, selected_keyphrase, golden_keyphrase):
