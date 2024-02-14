@@ -10,9 +10,12 @@ class Gui:
     def __init__(self):
         self.input_title = ""
         self.input_abstract = ""
-        self.pag_selected_keyphrase = ""
-        self.traditional_selected_keyphrase = ""
-        self.golden_keyphrase = ""
+        self.pag_selected_keyphrase = []
+        self.traditional_selected_keyphrase = []
+        self.golden_keyphrase = []
+        self.precision = 0.0
+        self.recall = 0.0
+        self.f1_score = 0.00
 
     def input_gui(self):
         self.input_title = st.text_area("Judul Dokumen:", placeholder="Masukkan judul dokumen")
@@ -37,13 +40,18 @@ class Gui:
                 pag_ranking.pag_centrality_scoring()
                 pag_ranking.get_pag_keyphrase_by_index()
                 pag_ranking.get_traditional_keyphrase_by_index()
+                pag_ranking.fill_pag_all_rank_keyphrase()
+                pag_ranking.fill_traditional_all_rank_keyphrase()
 
-                self.pag_selected_keyphrase = pag_ranking.pag_selected_keyphrase
-                self.traditional_selected_keyphrase = pag_ranking.traditional_selected_keyphrase
+                self.pag_selected_keyphrase = pag_ranking.pag_selected_keyphrase[:5]
+                self.traditional_selected_keyphrase = pag_ranking.traditional_selected_keyphrase[:5]
                 
                 st.session_state.extraction_done = True
                 st.session_state.pag_selected_keyphrase = self.pag_selected_keyphrase
                 st.session_state.traditional_selected_keyphrase = self.traditional_selected_keyphrase
+
+                st.session_state.pag_all_rank = pag_ranking.pag_all_rank_keyphrase
+                st.session_state.traditional_all_rank = pag_ranking.traditional_all_rank_keyphrase
             else:
                 st.warning("Judul dan abstrak dokumen tidak boleh kosong!")
 
@@ -86,6 +94,8 @@ class Gui:
             preprocessing.pos_tagging_token()
             preprocessing.noun_phrase_chunking()
 
+            print("Teks gabungan : ", preprocessing.data_input)
+
             st.write("Data Input: ")
             st.write(preprocessing.data_input)
             st.write("Teks yang Dibersihkan:", preprocessing.token)
@@ -94,15 +104,15 @@ class Gui:
 
             st.write("Hasil Embedding : ", st.session_state.output_embedding)
             
-            st.write("_Keyphrase Terpilih_ oleh _Position Aware Graph_ : ", self.pag_selected_keyphrase)
-            st.write("_Keyphrase Terpilih_ oleh _Traditional Centrality_ : ", self.traditional_selected_keyphrase)
+            st.write("_Keyphrase Terpilih_ oleh _Position Aware Graph_ : ", st.session_state.pag_all_rank)
+            st.write("_Keyphrase Terpilih_ oleh _Traditional Centrality_ : ", st.session_state.traditional_all_rank)
         
     def evaluate_result(self):
         if st.session_state.get("page_state") == "evaluation":
             st.header("Evaluasi _Confusion Matrix_")
             self.golden_keyphrase = st.text_area("_Golden Keyphrase_ :", placeholder="Masukkan _golden keyphrase_ (pisahkan dengan tanda koma , )")
             self.golden_keyphrase = self.golden_keyphrase.lower()
-            self.golden_keyphrase = self.golden_keyphrase.split(", ")
+            self.golden_keyphrase = self.golden_keyphrase.split("; ")
 
             btn_eval = st.button("Jalankan Evaluasi")
             if btn_eval:
@@ -129,9 +139,9 @@ class Gui:
             if item not in selected_keyphrase:
                 FN += 1
 
-        precision = round(TP / (TP + FP), 2) if (TP + FP) != 0 else 0
-        recall = round(TP / (TP + FN), 2) if (TP + FN) != 0 else 0
-        f1_score = round((2 * (precision * recall) / (precision + recall)) if (precision + recall) != 0 else 0, 2)
+        self.precision = round(TP / (TP + FP), 2) if (TP + FP) != 0 else 0
+        self.recall = round(TP / (TP + FN), 2) if (TP + FN) != 0 else 0
+        self.f1_score = round((2 * (self.precision * self.recall) / (self.precision + self.recall)) if (self.precision + self.recall) != 0 else 0, 2)
 
         # Konversi nilai-nilai TP, TN, FP, FN menjadi string tanpa koma
         TP_str = str(int(TP))
@@ -157,9 +167,9 @@ class Gui:
                     <td style="text-align: center;">{TN_str}</td>
                     <td style="text-align: center;">{FP_str}</td>
                     <td style="text-align: center;">{FN_str}</td>
-                    <td style="text-align: center;">{precision}</td>
-                    <td style="text-align: center;">{recall}</td>
-                    <td style="text-align: center;">{f1_score}</td>
+                    <td style="text-align: center;">{self.precision}</td>
+                    <td style="text-align: center;">{self.recall}</td>
+                    <td style="text-align: center;">{self.f1_score}</td>
                 </tr>
             </table>
             """,
