@@ -1,0 +1,5 @@
+nltk
+torch
+re
+pandas
+transformers

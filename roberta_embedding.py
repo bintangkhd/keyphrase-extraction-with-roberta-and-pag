@@ -1,6 +1,8 @@
 from transformers import AutoModel, AutoTokenizer
 import torch
 
+import pandas as pd
+
 class RobertaEmbedding:
     def __init__(self, noun_phrases, tensor_length=512):
         self.roberta_plm = "jafarabdurrohman/indonesian-roberta-base-ler"
@@ -26,3 +28,17 @@ class RobertaEmbedding:
 
         avg_embedding = output.last_hidden_state.mean(dim=1)
         self.output_embedding.append(avg_embedding)
+
+
+    # def to_csv(self):
+    #     # Create DataFrame for noun phrases
+    #     noun_phrase_df = pd.DataFrame({'Noun Phrase': [' '.join(phrase.split()) for sublist in self.noun_phrases for phrase in sublist]})
+
+    #     # Create DataFrame for embeddings
+    #     embedding_df = pd.DataFrame(self.output_embedding[0].numpy())
+
+    #     # Combine noun phrases and embedding DataFrames
+    #     combined_df = pd.concat([noun_phrase_df, embedding_df], axis=1)
+
+    #     # Save DataFrame to CSV file
+    #     combined_df.to_csv('average_embedding.csv', index=False)

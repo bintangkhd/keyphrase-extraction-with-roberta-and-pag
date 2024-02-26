@@ -34,6 +34,7 @@ class Gui:
 
                 roberta_embedding = RobertaEmbedding(preprocessing.noun_phrase)
                 roberta_embedding.begin_embedding()
+                # roberta_embedding.to_csv()
                 st.session_state.output_embedding = roberta_embedding.output_embedding
 
                 pag_ranking = PagCentralityRanking(preprocessing.data_input, preprocessing.noun_phrase, roberta_embedding.output_embedding[0])
@@ -43,8 +44,22 @@ class Gui:
                 pag_ranking.fill_pag_all_rank_keyphrase()
                 pag_ranking.fill_traditional_all_rank_keyphrase()
 
+                # pag_ranking.pag_score_to_csv()
+
                 self.pag_selected_keyphrase = pag_ranking.pag_selected_keyphrase[:5]
                 self.traditional_selected_keyphrase = pag_ranking.traditional_selected_keyphrase[:5]
+
+                print("PAG KEYPHRASE :")
+                print("TOP 5 =", pag_ranking.pag_selected_keyphrase[:5])
+                print("TOP 10 =", pag_ranking.pag_selected_keyphrase[:10])
+                print("TOP 20 =", pag_ranking.pag_selected_keyphrase[:20])
+                print("TOP 30 =", pag_ranking.pag_selected_keyphrase[:30])
+
+                print("\nTRADITIONAL KEYPHRASE :")
+                print("TOP 5 =", pag_ranking.traditional_selected_keyphrase[:5])
+                print("TOP 10 =", pag_ranking.traditional_selected_keyphrase[:10])
+                print("TOP 20 =", pag_ranking.traditional_selected_keyphrase[:20])
+                print("TOP 30 =", pag_ranking.traditional_selected_keyphrase[:30])
                 
                 st.session_state.extraction_done = True
                 st.session_state.pag_selected_keyphrase = self.pag_selected_keyphrase
@@ -110,7 +125,7 @@ class Gui:
     def evaluate_result(self):
         if st.session_state.get("page_state") == "evaluation":
             st.header("Evaluasi _Confusion Matrix_")
-            self.golden_keyphrase = st.text_area("_Golden Keyphrase_ :", placeholder="Masukkan _golden keyphrase_ (pisahkan dengan tanda koma , )")
+            self.golden_keyphrase = st.text_area("_Golden Keyphrase_ :", placeholder="Masukkan _golden keyphrase_ (pisahkan dengan tanda titik koma ; )")
             self.golden_keyphrase = self.golden_keyphrase.lower()
             self.golden_keyphrase = self.golden_keyphrase.split("; ")
 

@@ -1,6 +1,8 @@
 import torch
 import re
 
+import pandas as pd
+
 class PagCentralityRanking:
     def __init__(self, input_data, noun_phrase, output_embedding, betha=0.2):
         self.keyphrase_candidate = noun_phrase[0]
@@ -114,4 +116,11 @@ class PagCentralityRanking:
             else:
                 keyphrases.append(None)
                 self.traditional_selected_keyphrase.append(None)
+
+    # def pag_score_to_csv(self):
+    #     # Create DataFrame for embeddings
+    #     pag_score_df = pd.DataFrame(self.pag_score.numpy())
+
+    #     # Save DataFrame to CSV file
+    #     pag_score_df.to_csv('pag_score.csv', index=False)
 

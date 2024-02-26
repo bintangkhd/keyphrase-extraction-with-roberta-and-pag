@@ -22,7 +22,9 @@ class Preprocessing:
         
         temp = []
         temp = list(filter(lambda token: token not in temp and token not in special_chars, data_tokens))
-        print("temp : ", temp)
+
+        print("Tokenisasi dan Penghapusan karakter spesial : ", temp)
+
         stop_words = set(stopwords.words("indonesian"))
         self.token = list(filter(lambda token: token not in stop_words, temp))
 
@@ -35,10 +37,56 @@ class Preprocessing:
     def noun_phrase_chunking(self):
         GRAMMAR_FORMULA = r"""
             NP:
+                # 1. Nilai kosong = 66 
+                # {<JJ|CD><CD>} # Kata sifat yang diikuti cardinal number 
+                # {<JJ|CD><NN.*><CD>} # Kata sifat dan kata benda yang diikuti cardinal number
+                # {<NN.*|JJ|NNP|NND>{2}} # NN terdiri dari 2 Kata
+                # {<NN.*|JJ|NNP|NND>{1}} # NN terdiri dari 1 kata
+                # {<FW>{2}} # FW (foreign word) 2 kata
+                # {<FW.*>{1,3}} # FW (foreign word) maksimal 3 kata
+                # {<FW>{1}} # FW (foreign word) 1 kata
+
+                # 2. Nilai kosong = 66 
+                # {<JJ|CD><CD>} # Kata sifat yang diikuti cardinal number 
+                # {<JJ|CD><NN.*><CD>} # Kata sifat dan kata benda yang diikuti cardinal number
+                # {<NN.*|JJ|NNP|NND>{2}} # NN terdiri dari 2 Kata
+                # {<NN.*|JJ|NNP|NND>{1}} # NN terdiri dari 1 kata
+                # {<FW.*>{1,3}} # FW (foreign word) maksimal 3 kata
+                # {<FW>{2}} # FW (foreign word) 2 kata
+                # {<FW>{1}} # FW (foreign word) 1 kata
+
+                # 3. Nilai kosong = 65
+                # {<JJ|CD><CD>} # Kata sifat yang diikuti cardinal number 
+                # {<JJ|CD><NN.*><CD>} # Kata sifat dan kata benda yang diikuti cardinal number
+                # {<NN.*|JJ|NNP|NND>{1}} # NN terdiri dari 1 kata
+                # {<NN.*|JJ|NNP|NND>{2}} # NN terdiri dari 2 Kata
+                # {<FW>{1}} # FW (foreign word) 1 kata
+                # {<FW>{2}} # FW (foreign word) 2 kata
+                # {<FW.*>{1,3}} # FW (foreign word) maksimal 3 kata
+
+                # 4. Nilai kosong = 70
+                # {<JJ|CD><CD>} # Kata sifat yang diikuti cardinal number 
+                # {<JJ|CD><NN.*><CD>} # Kata sifat dan kata benda yang diikuti cardinal number
+                # {<NN.*|JJ|NNP|NND>{2}} # NN terdiri dari 2 Kata
+                # {<NN.*|JJ|NNP|NND>{1}} # NN terdiri dari 1 kata
+                # {<FW>{1}} # FW (foreign word) 1 kata
+                # {<FW>{2}} # FW (foreign word) 2 kata
+                # {<FW.*>{1,3}} # FW (foreign word) maksimal 3 kata
+                
+                # 5. BEST2 # Nilai kosong = 60
+                # {<JJ|CD><CD>} # Kata sifat yang diikuti cardinal number 
+                # {<JJ|CD><NN.*><CD>} # Kata sifat dan kata benda yang diikuti cardinal number
+                # {<NN.*|JJ|NNP|NND>{1}} # NN terdiri dari 1 kata
+                # {<NN.*|JJ|NNP|NND>{2}} # NN terdiri dari 2 Kata
+                # {<FW>{2}} # FW (foreign word) 2 kata
+                # {<FW.*>{1,3}} # FW (foreign word) maksimal 3 kata
+                # {<FW>{1}} # FW (foreign word) 1 kata
+
+                # 6. BEST1 # Nilai kosong = 60
                 {<JJ|CD><CD>} # Kata sifat yang diikuti cardinal number 
                 {<JJ|CD><NN.*><CD>} # Kata sifat dan kata benda yang diikuti cardinal number
-                {<NN.*|JJ|NNP|NND>{2}} # NN terdiri dari 2 Kata
-                {<NN.*|JJ|NNP|NND>{1}} # NN terdiri dari 1 kata
+                {<NN.JJ>{2}} # NN terdiri dari 2 Kata
+                {<NN|NNP|NND>{1}} # NN terdiri dari 1 kata
                 {<FW>{2}} # FW (foreign word) 2 kata
                 {<FW.*>{1,3}} # FW (foreign word) maksimal 3 kata
                 {<FW>{1}} # FW (foreign word) 1 kata
@@ -58,4 +106,6 @@ class Preprocessing:
 
 
             self.noun_phrase.append(chunks)
+            print("Kandidat Keyphrase : \n")
+            print(self.noun_phrase[0])
         
