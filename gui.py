@@ -38,7 +38,7 @@ class Gui:
                 st.session_state.output_embedding = roberta_embedding.output_embedding
 
                 pag_ranking = PagCentralityRanking(preprocessing.data_input, preprocessing.noun_phrase, roberta_embedding.output_embedding[0])
-                pag_ranking.pag_centrality_scoring()
+                pag_ranking.calculate_centrality_scoring()
                 pag_ranking.get_pag_keyphrase_by_index()
                 pag_ranking.get_traditional_keyphrase_by_index()
                 pag_ranking.fill_pag_all_rank_keyphrase()

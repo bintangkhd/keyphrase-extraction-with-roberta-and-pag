@@ -1,6 +1,5 @@
 import torch
 import re
-
 import pandas as pd
 
 class PagCentralityRanking:
@@ -62,17 +61,29 @@ class PagCentralityRanking:
 
         for j in range(len(self.vertice)):
             edge_ij = vertice_i * self.vertice[j]
-            theta = self.betha * (torch.max(edge_ij) - torch.min(edge_ij))
-            traditional_centrality_score += torch.max(edge_ij - theta)
+            traditional_centrality_score += torch.max(edge_ij)
 
         return traditional_centrality_score
+    
+    def pag_centrality_scoring(self, vertice_i):
+        pag_centrality_score = torch.tensor([0.0])
 
-    def pag_centrality_scoring(self):
+        for j in range(len(self.vertice)):
+            edge_ij = vertice_i * self.vertice[j]
+            theta = self.betha * (torch.max(edge_ij) - torch.min(edge_ij))
+            
+            if torch.all(edge_ij >= theta):
+                pag_centrality_score += torch.max(edge_ij - theta)
+
+        return pag_centrality_score
+
+
+    def calculate_centrality_scoring(self):
         self.pag_score = torch.tensor([0.0] * len(self.vertice))
         self.traditional_score = torch.tensor([0.0] * len(self.vertice))
 
         for i in range(len(self.pag_score)):
-            self.pag_score[i] = self.calculate_exponential_value(i) * self.traditional_centrality_scoring(self.vertice[i])
+            self.pag_score[i] = self.calculate_exponential_value(i) * self.pag_centrality_scoring(self.vertice[i])
             self.traditional_score[i] = self.traditional_centrality_scoring(self.vertice[i])
 
         top_indices = torch.argsort(self.pag_score, descending=True)
